@@ -1,0 +1,43 @@
+#!/bin/bash
+sleep 3
+
+launch_panel() {
+    kitty --class cava-term -e tmux new-session \; \
+    set -g status off \; \
+    split-window -v \; \
+    select-pane -t 0 \; \
+    resize-pane -y 2 \; \
+    send-keys 'while true; do clear; printf "\033[1;36m%s\033[0m\n" "$(playerctl metadata --format "{{artist}} - {{title}}")"; sleep 1; done' C-m \; \
+    select-pane -t 1 \; \
+    send-keys 'cava' C-m &
+    sleep 1
+}
+
+VISIBLE=0
+
+playerctl --player=spotify --follow status | while read status; do
+
+    if [[ "$status" == "Playing" ]]; then
+
+        # If window does not exist, create it
+        if ! pgrep -f "cava-term" > /dev/null; then
+            launch_panel
+        fi
+
+        # If not visible, show special workspace
+        if [ "$VISIBLE" -eq 0 ]; then
+            hyprctl dispatch togglespecialworkspace music
+            VISIBLE=1
+        fi
+
+    else
+
+        # Hide if visible
+        if [ "$VISIBLE" -eq 1 ]; then
+            hyprctl dispatch togglespecialworkspace music
+            VISIBLE=0
+        fi
+
+    fi
+
+done
