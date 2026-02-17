@@ -1,0 +1,20 @@
+1.2A BYPASS BY URL PATH CHANGING
+  1.step up two account usr1 ,usr2
+  2.log in via usr1 by completing 2A verification in process ...see path changes like /login_2a_verification to /my-account?id=usr1 
+  3.in login panel enetr usr2 and passwd ,in 2A verification phase ..try to modify or change url to final path (/myaccount?id=usr2)
+  #4.REMEMBER IT IS NOT ONLY ABT THE URL PATH SOMETIMES FAILURE TO CHECK THE TOKEN BELONGS TO WHICH USR...CHK ALL POSSIBLE PARAMETER THAT CHLS FOR AUTENTICATION OR AUTHORISATION
+
+2.PASSWORD REST BROKEN LOGIC.
+  
+  1.Backend sends the reset link for email
+  2.User click that link and see new_pass and conform_pass
+  3.In POST request temp-token is created for this process and autosetting username=usr &new_pass=xxx&conform_pass=xxx in POST request in body.
+  4.If changing the usr name parameter  username=usr2 changes passwd for usr,it means it is not checking for whose token it is ..likely because developer things that rest link is going to certian user's email   
+   
+   So backend logic becomes:
+         if token is valid:
+            reset password for submitted username
+   instead of 
+         user = lookup_user_by_token(token)
+         reset password for user
+   ACCORDING TO ME ..IT COMES UNDER AUTHORISATION BUT OWSAP CLASSIFIED IT AS AUTENTICATION.
